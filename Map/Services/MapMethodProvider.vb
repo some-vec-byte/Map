@@ -80,12 +80,12 @@ Public Class MapMethodProvider
         ' ToType über einen leeren Konstruktor als Objekt erstellen
         ilGen.Emit(OpCodes.Newobj, toType.GetConstructor(Type.EmptyTypes))
 
+        ' Properties filtern
         Dim propsToIter = fromType.GetProperties().
-                                 Where(Function(info As PropertyInfo) propsToIgnore.Contains(info.Name) = False).
-                                 ToArray()
+                                   Where(Function(info As PropertyInfo) propsToIgnore.Contains(info.Name) = False).
+                                   ToArray()
 
-
-        ' alle Eigenschaften von ToType iterieren und FromType hinzufügen
+        ' alle Eigenschaften von FromType iterieren und ToType hinzufügen
         For Each fromProp In propsToIter
 
             Dim toProp = toType.GetProperty(fromProp.Name)
@@ -111,6 +111,7 @@ Public Class MapMethodProvider
         ' Return des neuen Objektes, Abschluss der Methode
         ilGen.Emit(OpCodes.Ret)
 
+        ' Klasse erstellen
         Dim createdType = typeBuilder.CreateType()
 
         Return createdType.GetMethod("Map", BindingFlags.Public Or BindingFlags.Static, New Type() {fromType})
