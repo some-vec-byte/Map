@@ -27,14 +27,19 @@ Public Class MapMethodProvider
     ''' <summary>
     ''' Der Name der Assembly.
     ''' </summary>
-    Private ReadOnly Property AsmName As String = "FakeGen"
+    Private Const ASM_NAME As String = "DynamicMapper"
+
+    ''' <summary>
+    ''' Der Name der Methode
+    ''' </summary>
+    Private Const METHOD_NAME As String = "Map"
 
     ''' <summary>
     ''' Initialisiert eine neue Instanz der <see cref="MapMethodProvider"/> Klasse.
     ''' </summary>
     Public Sub New()
         Me.Methods = New Dictionary(Of MethodKey, MethodInfo)()
-        Dim assemblyName As AssemblyName = New AssemblyName(AsmName)
+        Dim assemblyName As AssemblyName = New AssemblyName(ASM_NAME)
         Me.AssmBuilder = AssemblyBuilder.DefineDynamicAssembly(assemblyName, AssemblyBuilderAccess.Run)
         Me.ModuleBuilder = Me.AssmBuilder.DefineDynamicModule(assemblyName.Name)
     End Sub
@@ -72,7 +77,7 @@ Public Class MapMethodProvider
 
         ' methode definieren:
         ' Public Shared Function Map(fromType as FromType) as ToType
-        Dim methodBuilder = typeBuilder.DefineMethod("Map", MethodAttributes.Public Or MethodAttributes.Static, toType, New Type() {fromType})
+        Dim methodBuilder = typeBuilder.DefineMethod(METHOD_NAME, MethodAttributes.Public Or MethodAttributes.Static, toType, New Type() {fromType})
 
         Dim ilGen = methodBuilder.GetILGenerator()
 
@@ -114,7 +119,7 @@ Public Class MapMethodProvider
         ' Klasse erstellen
         Dim createdType = typeBuilder.CreateType()
 
-        Return createdType.GetMethod("Map", BindingFlags.Public Or BindingFlags.Static, New Type() {fromType})
+        Return createdType.GetMethod(METHOD_NAME, BindingFlags.Public Or BindingFlags.Static, New Type() {fromType})
     End Function
 
     ''' <summary>
